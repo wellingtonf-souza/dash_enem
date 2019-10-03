@@ -1517,14 +1517,14 @@ amostra_2014_2017 = data.frame(
                          amostra_2015$IN_DEFICIENCIA_FISICA,amostra_2014$IN_DEFICIENCIA_FISICA),
   AUTISMO = c(amostra_2017$IN_AUTISMO,amostra_2016$IN_AUTISMO,
                          amostra_2015$IN_AUTISMO,amostra_2014$IN_AUTISMO),
-  Q001 = c(as.character(amostra_2017$Q001),as.character(amostra_2016$Q001),
-           as.character(amostra_2015$Q001),as.character(amostra_2014$Q001)),
-  Q002 = c(as.character(amostra_2017$Q002),as.character(amostra_2016$Q002),
-           as.character(amostra_2015$Q002),as.character(amostra_2014$Q002)),
-  Q006 = c(as.character(amostra_2017$Q006),as.character(amostra_2016$Q006),
-           as.character(amostra_2015$Q006),as.character(amostra_2014$Q003)),
-  Q027 = c(as.character(amostra_2017$Q027),as.character(amostra_2016$Q047),
-           as.character(amostra_2015$Q047),as.character(amostra_2014$Q035))
+  Q001 = fct_c(amostra_2017$Q001,amostra_2016$Q001,
+           amostra_2015$Q001,amostra_2014$Q001),
+  Q002 = fct_c(amostra_2017$Q002,amostra_2016$Q002,
+           amostra_2015$Q002,amostra_2014$Q002),
+  Q006 = fct_c(amostra_2017$Q006,amostra_2016$Q006,
+           amostra_2015$Q006,amostra_2014$Q003),
+  Q027 = fct_c(amostra_2017$Q027,amostra_2016$Q047,
+               amostra_2015$Q047,amostra_2014$Q035)
 )
 
 nec_espec_2014_2017 = data.frame(
@@ -1555,14 +1555,14 @@ nec_espec_2014_2017 = data.frame(
                          nec_espec_2015$IN_DEFICIENCIA_FISICA,nec_espec_2014$IN_DEFICIENCIA_FISICA),
   AUTISMO = c(nec_espec_2017$IN_AUTISMO,nec_espec_2016$IN_AUTISMO,
               nec_espec_2015$IN_AUTISMO,nec_espec_2014$IN_AUTISMO),
-  Q001 = c(as.character(nec_espec_2017$Q001),as.character(nec_espec_2016$Q001),
-           as.character(nec_espec_2015$Q001),as.character(nec_espec_2014$Q001)),
-  Q002 = c(as.character(nec_espec_2017$Q002),as.character(nec_espec_2016$Q002),
-           as.character(nec_espec_2015$Q002),as.character(nec_espec_2014$Q002)),
-  Q006 = c(as.character(nec_espec_2017$Q006),as.character(nec_espec_2016$Q006),
-           as.character(nec_espec_2015$Q006),as.character(nec_espec_2014$Q003)),
-  Q027 = c(as.character(nec_espec_2017$Q027),as.character(nec_espec_2016$Q047),
-           as.character(nec_espec_2015$Q047),as.character(nec_espec_2014$Q035))
+  Q001 = fct_c(nec_espec_2017$Q001,nec_espec_2016$Q001,
+               nec_espec_2015$Q001,nec_espec_2014$Q001),
+  Q002 = fct_c(nec_espec_2017$Q002,nec_espec_2016$Q002,
+               nec_espec_2015$Q002,nec_espec_2014$Q002),
+  Q006 = fct_c(nec_espec_2017$Q006,nec_espec_2016$Q006,
+               nec_espec_2015$Q006,nec_espec_2014$Q003),
+  Q027 = fct_c(nec_espec_2017$Q027,nec_espec_2016$Q047,
+               nec_espec_2015$Q047,nec_espec_2014$Q035)
 )
 
 amostra_2014_2017$Q027 = ifelse(as.character(amostra_2014_2017$Q027)=="NA",NA,as.character(amostra_2014_2017$Q027))
