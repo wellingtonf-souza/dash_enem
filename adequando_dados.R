@@ -1499,7 +1499,7 @@ amostra_2014_2017 = data.frame(
                    amostra_2014$NU_NOTA_REDACAO),
   CO_MUNICIPIO_RESIDENCIA = c(amostra_2017$CO_MUNICIPIO_RESIDENCIA,amostra_2016$CO_MUNICIPIO_RESIDENCIA,
                               amostra_2015$CO_MUNICIPIO_RESIDENCIA,amostra_2014$COD_MUNICIPIO_RESIDENCIA),
-  UF_RESIDENCIA = c(amostra_2017$SG_UF_RESIDENCIA,amostra_2016$SG_UF_RESIDENCIA,amostra_2015$SG_UF_RESIDENCIA,amostra_2014$UF_RESIDENCIA),
+  UF_RESIDENCIA = fct_c(amostra_2017$SG_UF_RESIDENCIA,amostra_2016$SG_UF_RESIDENCIA,amostra_2015$SG_UF_RESIDENCIA,amostra_2014$UF_RESIDENCIA),
   DEPENDENCIA_ADM_ESC = c(amostra_2017$TP_DEPENDENCIA_ADM_ESC,amostra_2016$TP_DEPENDENCIA_ADM_ESC,
                     amostra_2015$TP_DEPENDENCIA_ADM_ESC,amostra_2014$ID_DEPENDENCIA_ADM_ESC),
   LOCALIZACAO_ESC = c(amostra_2017$TP_LOCALIZACAO_ESC,amostra_2016$TP_LOCALIZACAO_ESC,
@@ -1527,8 +1527,6 @@ amostra_2014_2017 = data.frame(
            as.character(amostra_2015$Q047),as.character(amostra_2014$Q035))
 )
 
-saveRDS(amostra_2014_2017,file = "amostra_2014_2017.rds")
-
 nec_espec_2014_2017 = data.frame(
   ANO = c(rep(2017,dim(nec_espec_2017)[1]),rep(2016,dim(nec_espec_2016)[1]),rep(2015,dim(nec_espec_2015)[1]),rep(2014,dim(nec_espec_2014)[1])),
   NOTA_CN = c(nec_espec_2017$NU_NOTA_CN,nec_espec_2016$NU_NOTA_CN,nec_espec_2015$NU_NOTA_CN,nec_espec_2014$NOTA_CN),
@@ -1539,7 +1537,7 @@ nec_espec_2014_2017 = data.frame(
                    nec_espec_2014$NU_NOTA_REDACAO),
   CO_MUNICIPIO_RESIDENCIA = c(nec_espec_2017$CO_MUNICIPIO_RESIDENCIA,nec_espec_2016$CO_MUNICIPIO_RESIDENCIA,
                               nec_espec_2015$CO_MUNICIPIO_RESIDENCIA,nec_espec_2014$COD_MUNICIPIO_RESIDENCIA),
-  UF_RESIDENCIA = c(nec_espec_2017$SG_UF_RESIDENCIA,nec_espec_2016$SG_UF_RESIDENCIA,nec_espec_2015$SG_UF_RESIDENCIA,nec_espec_2014$UF_RESIDENCIA),
+  UF_RESIDENCIA = fct_c(nec_espec_2017$SG_UF_RESIDENCIA,nec_espec_2016$SG_UF_RESIDENCIA,nec_espec_2015$SG_UF_RESIDENCIA,nec_espec_2014$UF_RESIDENCIA),
   DEPENDENCIA_ADM_ESC = c(nec_espec_2017$TP_DEPENDENCIA_ADM_ESC,nec_espec_2016$TP_DEPENDENCIA_ADM_ESC,
                           nec_espec_2015$TP_DEPENDENCIA_ADM_ESC,nec_espec_2014$ID_DEPENDENCIA_ADM_ESC),
   LOCALIZACAO_ESC = c(nec_espec_2017$TP_LOCALIZACAO_ESC,nec_espec_2016$TP_LOCALIZACAO_ESC,
@@ -1567,4 +1565,9 @@ nec_espec_2014_2017 = data.frame(
            as.character(nec_espec_2015$Q047),as.character(nec_espec_2014$Q035))
 )
 
+amostra_2014_2017$Q027 = ifelse(as.character(amostra_2014_2017$Q027)=="NA",NA,as.character(amostra_2014_2017$Q027))
+nec_espec_2014_2017$Q027 = ifelse(as.character(nec_espec_2014_2017$Q027)=="NA",NA,as.character(nec_espec_2014_2017$Q027))
+
 saveRDS(nec_espec_2014_2017,file = "nec_espec_2014_2017.rds")
+saveRDS(amostra_2014_2017,file = "amostra_2014_2017.rds")
+
