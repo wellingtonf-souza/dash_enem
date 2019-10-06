@@ -58,7 +58,7 @@ body = dashboardBody(
                socioeconômicos respondidos, respeitando obviamente o sigilo dos participantes."),
            br(),
            h4("Destaca-se que devido à grande quantidade de dados para a análise geral foi coletada
-              em cada ano uma amostra aleatória de 200 mil indivíduos que efetivamente fizeram todas as provas, 
+              em cada ano uma amostra aleatória de 100 mil indivíduos que efetivamente fizeram todas as provas, 
               ou seja, não faltaram nem foram eliminados de nenhuma das 4 provas e não tiveram sua redação
               invalidada. Já para a análise das condições especiais, todos os indivíduos que assinalaram 
               a condição e fizeram efetivamente todas as provas, bem como a redação, foram coletados."),

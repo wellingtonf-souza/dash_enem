@@ -51,7 +51,7 @@ amostra_2014 = dbGetQuery(con,"SELECT IN_PRESENCA_CN,IN_PRESENCA_CH,IN_PRESENCA_
                                                     IN_PRESENCA_LC=1 AND 
                                                     IN_PRESENCA_MT=1 AND
                                                     IN_STATUS_REDACAO = 7
-                                                    ORDER BY RANDOM() LIMIT 200000;")
+                                                    ORDER BY RANDOM() LIMIT 100000;")
 
 write.csv2(amostra_2014,row.names = F,file = "C:/Users/welli/Desktop/dash_enem/amostra_2014.csv")  
 
@@ -160,7 +160,7 @@ amostra_2015 = dbGetQuery(con,"SELECT TP_PRESENCA_CN,TP_PRESENCA_CH,TP_PRESENCA_
                           TP_PRESENCA_LC=1 AND 
                           TP_PRESENCA_MT=1 AND
                           TP_STATUS_REDACAO = 1
-                          ORDER BY RANDOM() LIMIT 200000;")
+                          ORDER BY RANDOM() LIMIT 100000;")
 
 write.csv2(amostra_2015,row.names = F,file = "C:/Users/welli/Desktop/dash_enem/amostra_2015.csv")  
 
@@ -269,7 +269,7 @@ amostra_2016 = dbGetQuery(con,"SELECT TP_PRESENCA_CN,TP_PRESENCA_CH,TP_PRESENCA_
                           TP_PRESENCA_LC=1 AND 
                           TP_PRESENCA_MT=1 AND
                           TP_STATUS_REDACAO = 1
-                          ORDER BY RANDOM() LIMIT 200000;")
+                          ORDER BY RANDOM() LIMIT 100000;")
 
 write.csv2(amostra_2016,row.names = F,file = "C:/Users/welli/Desktop/dash_enem/amostra_2016.csv")  
 
@@ -378,7 +378,7 @@ amostra_2017 = dbGetQuery(con,"SELECT TP_PRESENCA_CN,TP_PRESENCA_CH,TP_PRESENCA_
                           TP_PRESENCA_LC=1 AND 
                           TP_PRESENCA_MT=1 AND
                           TP_STATUS_REDACAO = 1
-                          ORDER BY RANDOM() LIMIT 200000;")
+                          ORDER BY RANDOM() LIMIT 100000;")
 
 write.csv2(amostra_2017,row.names = F,file = "C:/Users/welli/Desktop/dash_enem/amostra_2017.csv")  
 
