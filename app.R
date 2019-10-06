@@ -3,6 +3,9 @@ library(shinydashboard)
 library(tidyverse)
 library(plotly)
 
+amostra   = readRDS("amostra_2014_2017.rds")
+nec_espec = readRDS("nec_espec_2014_2017.rds")
+
 header = dashboardHeader(title = "ENEM Analytics")
 
 sidebar = dashboardSidebar(
@@ -36,7 +39,7 @@ body = dashboardBody(
     tabItem(tabName = "metodologia",
             h3(strong("Metodologia")),
             br(),
-            h4(p("O ENEM, Exame Nacional do Ensino Médio, é uma avaliação anual desenvolvida
+            h4("O ENEM, Exame Nacional do Ensino Médio, é uma avaliação anual desenvolvida
                pelo Inep, Instituto Nacional de Estudos e Pesquisas Educacionais Anísio 
                Teixeira. Tem entre seus objetivos permitir o acesso à educação superior, 
                a programas governamentais de financiamento e viabilizar o desenvolvimento
@@ -45,17 +48,28 @@ body = dashboardBody(
                no Sisu, Sistema de Seleção Unificada. Esta é uma plataforma online do Ministério
                da Educação, MEC, que seleciona estudantes para instituições públicas de ensino 
                superior. Atualmente, o Sisu é a principal forma de ingresso nos cursos superiores,
-               fato este que justifica os mais de 5,5 milhões de inscritos na edição de 2018.")),
+               fato este que justifica os mais de 5,5 milhões de inscritos na edição de 2018."),
             br(),
-            h4(p("As análises apresentadas neste",em("dashboard"),"foram realizadas utilizando os 
+            h4("As análises apresentadas neste",em("dashboard"),"foram realizadas utilizando os 
                microdados do ENEM disponibilizados pelo",a(href = "http://portal.inep.gov.br/microdados",
-               "Inep,"),"estes possibilitam aos pesquisadores
+               "Inep."),"Estes possibilitam aos pesquisadores
                avaliar a educação brasileira e consistem no menor nível de desagregação dos dados 
                do exame, apresentando todo conteúdo das avaliações realizadas e questionários 
-               socioeconômicos respondidos, respeitando obviamente o sigilo dos participantes."))
+               socioeconômicos respondidos, respeitando obviamente o sigilo dos participantes."),
+           br(),
+           h4("Destaca-se que devido à grande quantidade de dados para a análise geral foi coletada
+              em cada ano uma amostra aleatória de 200 mil indivíduos que efetivamente fizeram todas as provas, 
+              ou seja, não faltaram nem foram eliminados de nenhuma das 4 provas e não tiveram sua redação
+              invalidada. Já para a análise das condições especiais, todos os indivíduos que assinalaram 
+              a condição e fizeram efetivamente todas as provas, bem como a redação, foram coletados."),
+           br(),
+           h4("Este aplicativo foi desenvolvido via linguagem de programação",
+              a(href = "https://cran.r-project.org/","R"),"e pacote",
+              a(href = "https://rstudio.github.io/shinydashboard/", "shinydashboard.")
            )
     )
   )
+)
 ui = dashboardPage(
   header,
   sidebar,
