@@ -4,6 +4,10 @@ library(tidyverse)
 library(plotly)
 library(highcharter)
 library(shinycssloaders)
+library(hrbrthemes)
+library(viridis)
+library(fpp2)
+library(magrittr)
 
 amostra   = readRDS("amostra_2014_2017.rds")
 nec_espec = readRDS("nec_espec_2014_2017.rds")
@@ -15,12 +19,14 @@ sidebar = dashboardSidebar(
     menuItem("Início",tabName = "inicio",icon = icon("home")),
     menuItem("Metodologia",tabName = "metodologia",icon = icon("fas fa-info-circle")),
     menuItem("Análise geral",tabName = "analise_geral",icon = icon("fas fa-chart-bar"),
-             menuSubItem("Univariada",tabName = "univ")),
+             menuSubItem("Univariada",tabName = "univ"),
+             menuSubItem("Bivariada" ,tabName = "bivariada"),
+             menuSubItem("Gráficos de série temporal",tabName = "time_series")),
     menuItem("Condições especiais",tabName = "cond_especiais",icon = icon("fas fa-user-tag")),
     menuItem("LinkedIn",icon = icon("fab fa-linkedin"),
              href = "https://www.linkedin.com/in/wellington-ferr-souza/"),
     menuItem("Github",icon = icon("fab fa-github"),
-             href = "https://github.com/wellingtonf-souza/")
+             href = "https://github.com/wellingtonf-souza/dash_enem")
   )
 )
   
@@ -31,7 +37,6 @@ body = dashboardBody(
         font-weight: bold
       }
     '))),
-  #tags$li(tags$style(HTML('li { font-family: "Caviar Dreams", Arial; }'))),
   tags$div(tags$style(HTML('.box-header h3 { font-family: "Caviar Dreams", Arial;}'))),
   tags$div(tags$style(HTML('div { font-family: "Caviar Dreams", Arial;}'))),
   tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.css"),
@@ -73,7 +78,7 @@ body = dashboardBody(
     ),
     tabItem(tabName = "univ",
             fluidRow(column(width = 2,
-                            selectInput(inputId = "nota.geral",
+                            selectInput(inputId = "nota.uni",
                                         label = "Selecione uma nota:",
                                         choices = c("Ciências da Natureza"="NOTA_CN",
                                                     "Ciências Humanas"="NOTA_CH",
@@ -81,11 +86,11 @@ body = dashboardBody(
                                                     "Matemática" = "NOTA_MT",
                                                     "Redação" = "NOTA_REDACAO"))),
                      column(width = 2,
-                            selectInput(inputId = "ano.geral",
+                            selectInput(inputId = "ano.uni",
                                         label = "Selecione um ano:",
                                         choices = 2014:2017)),
                      column(width = 5,
-                            selectInput(inputId = "var.geral",
+                            selectInput(inputId = "var.uni",
                                         label = "Selecione uma variável:",
                                         choices = c("Dependência administrativa"="DEPENDENCIA_ADM_ESC",
                                                     "Localização"="LOCALIZACAO_ESC",
@@ -99,16 +104,105 @@ body = dashboardBody(
             ),
             fluidRow(box(width = 12,
                          title = "Boxplots das notas em relação às categorias da variável",
-                         withSpinner(plotlyOutput("graf.boxplot.geral")))),
+                         withSpinner(plotlyOutput("graf.boxplot.uni")))),
             fluidRow(box(width = 12,
                          title = "Densidade das notas em relação às categorias da variável",
-                         withSpinner(plotlyOutput("graf.density.geral")))),
+                         withSpinner(plotlyOutput("graf.density.uni")))),
             fluidRow(box(width = 12,
                          title = "Quantitativo de indivíduos em relação às categorias da variável",
-                         withSpinner(plotlyOutput("graf.quanti.geral"))))
-    )
-  )
+                         withSpinner(plotlyOutput("graf.quanti.uni"))))
+    ),
+    tabItem(tabName = "bivariada",
+            fluidRow(column(width = 2,
+                            selectInput(inputId = "nota.biv",
+                                        label = "Selecione uma nota:",
+                                        choices = c("Ciências da Natureza"="NOTA_CN",
+                                                    "Ciências Humanas"="NOTA_CH",
+                                                    "Linguagens e Códigos" = "NOTA_LC",
+                                                    "Matemática" = "NOTA_MT",
+                                                    "Redação" = "NOTA_REDACAO"))),
+                     column(width = 2,
+                            selectInput(inputId = "ano.biv",
+                                        label = "Selecione um ano:",
+                                        choices = 2014:2017)),
+                     column(width = 3,
+                            selectInput(inputId = "var.biv",
+                                        label = "Selecione uma variável:",
+                                        choices = c("Dependência administrativa"="DEPENDENCIA_ADM_ESC",
+                                                    "Localização"="LOCALIZACAO_ESC",
+                                                    "Sexo"="SEXO",
+                                                    "Situação de conclusão do Ensino Médio "="ST_CONCLUSAO",
+                                                    "Cor/Raça"="COR_RACA",
+                                                    "Até que série o pai, ou o homem responsável, estudou"="Q001",
+                                                    "Até que série a mãe, ou a mulher responsável, estudou"="Q002",
+                                                    "Renda mensal da família"="Q006",
+                                                    "Tipo de escola que frequentou o Ensino Médio"="Q027"))),
+                     uiOutput("segunda.var")
+            ),
+            fluidRow(
+              HTML('<div class="col-sm-12">
+                   <div class="box">
+                   <div class="box-header">
+                   <h3 class="box-title">Heatmap das notas médias dos grupos</h3>
+                   </div>
+                   <div class="box-body">
+                   <script src="assets/spinner.js"></script>
+                   <div class="shiny-spinner-output-container">
+                   <div class="load-container load1">
+                   <div id="spinner-0434c3bd3dfcd8a1fdb8955de224d747" class="loader">Loading...</div>
+                   </div>
+                   <div id="graf.heatmap" style="width:100%; height:650px; " class="plotly html-widget html-widget-output shiny-report-size"></div>
+                   </div>
+                   </div>
+                   </div>
+                   </div>')
+                     )
+            ),
+    tabItem(tabName = "time_series",
+            fluidRow(column(width = 3,
+                            selectInput(
+                              inputId = "var_time_serie",
+                              label = "Selecione uma variável:",
+                              choices = c("Dependência administrativa"="DEPENDENCIA_ADM_ESC",
+                                          "Localização"="LOCALIZACAO_ESC",
+                                          "Sexo"="SEXO",
+                                          "Situação de conclusão do Ensino Médio "="ST_CONCLUSAO",
+                                          "Cor/Raça"="COR_RACA",
+                                          "Até que série o pai, ou o homem responsável, estudou"="Q001",
+                                          "Até que série a mãe, ou a mulher responsável, estudou"="Q002",
+                                          "Renda mensal da família"="Q006",
+                                          "Tipo de escola que frequentou o Ensino Médio"="Q027"))
+                            )
+                            ),
+            fluidRow(box(title = "Nota média de matemática no decorrer dos anos",
+                         width = 12,collapsible=TRUE,
+                         withSpinner(plotlyOutput("graf_serie_mat"))
+                         )
+                     ),
+            fluidRow(box(title = "Nota média de ciências da natureza no decorrer dos anos",
+                         width = 12,collapsible=TRUE,
+                         withSpinner(plotlyOutput("graf_serie_cn"))
+                         )
+                     ),
+            fluidRow(box(title = "Nota média de ciências humanas no decorrer dos anos",
+                         width = 12,collapsible=TRUE,
+                         withSpinner(plotlyOutput("graf_serie_ch"))
+                         )
+                     ),
+            fluidRow(box(title = "Nota média de linguagens e códigos no decorrer dos anos",
+                         width = 12,collapsible=TRUE,
+                         withSpinner(plotlyOutput("graf_serie_lc"))
+                         )
+                     ),
+            fluidRow(box(title = "Nota média de redação no decorrer dos anos",
+                         width = 12,collapsible=TRUE,
+                         withSpinner(plotlyOutput("graf_serie_red"))
+            )
+            )
+                     )
+            )
 )
+
 ui = dashboardPage(
   header,
   sidebar,
@@ -117,43 +211,147 @@ ui = dashboardPage(
 server = function(input,output,session){
   
   #=====================================
-  # analise geral
+  # analise geral - Univariada
   #=====================================
-  output$graf.boxplot.geral = renderPlotly({
+  output$graf.boxplot.uni = renderPlotly({
     g1 = amostra %>% 
-      dplyr::select(input$nota.geral,input$var.geral,ANO) %>% 
-      dplyr::filter(ANO==input$ano.geral) %>% na.omit() %>% 
+      dplyr::select(input$nota.uni,input$var.uni,ANO) %>% 
+      dplyr::filter(ANO==input$ano.uni) %>% na.omit() %>% 
       ggplot()+
-      geom_boxplot(mapping = aes(!!sym(input$var.geral),
-                                 !!sym(input$nota.geral),
-                                 fill = !!sym(input$var.geral))) +
+      geom_boxplot(mapping = aes(!!sym(input$var.uni),
+                                 !!sym(input$nota.uni),
+                                 fill = !!sym(input$var.uni))) +
       theme_minimal() + 
       theme(legend.position='none') + coord_flip() + labs(fill = "") + xlab("") + ylab("")
       ggplotly(g1)
   })
   
-  output$graf.density.geral = renderPlotly({
+  output$graf.density.uni = renderPlotly({
     g2 = amostra %>% 
-      dplyr::select(input$nota.geral,input$var.geral,ANO) %>% 
-      dplyr::filter(ANO==input$ano.geral) %>% na.omit() %>% 
+      dplyr::select(input$nota.uni,input$var.uni,ANO) %>% 
+      dplyr::filter(ANO==input$ano.uni&!!sym(input$var.uni)!="") %>% na.omit() %>%
       ggplot()+
-      geom_density(mapping = aes(!!sym(input$nota.geral),
-                                 fill = !!sym(input$var.geral)),alpha = 0.5) +
+      geom_density(mapping = aes(!!sym(input$nota.uni),
+                                 fill = !!sym(input$var.uni)),alpha = 0.5) +
       theme_minimal() + labs(fill = "") + xlab("") + ylab("")
     ggplotly(g2)
   })
   
-  output$graf.quanti.geral = renderPlotly({
-    set.seed(12345)
+  output$graf.quanti.uni = renderPlotly({
     g3 = amostra %>% 
-      dplyr::select(input$nota.geral,input$var.geral,ANO) %>% 
-      dplyr::filter(ANO==input$ano.geral) %>% na.omit() %>% 
-      ggplot(mapping = aes(!!sym(input$var.geral)))+
-      geom_bar(aes(fill=!!sym(input$var.geral)),col = "black") + 
+      dplyr::select(input$nota.uni,input$var.uni,ANO) %>% 
+      dplyr::filter(ANO==input$ano.uni) %>% na.omit() %>% 
+      ggplot(mapping = aes(!!sym(input$var.uni)))+
+      geom_bar(aes(fill=!!sym(input$var.uni)),col = "black") + 
       theme_minimal() + labs(fill = "") +
       theme(legend.position='none') +
       coord_flip() + xlab("") + ylab("")
     ggplotly(g3,tooltip = c("x","y"))
+  })
+  
+  #=====================================
+  # analise geral - bivariada
+  #=====================================
+  
+  output$segunda.var = renderUI({
+    
+    escolhas = c("Dependência administrativa"="DEPENDENCIA_ADM_ESC",
+                 "Localização"="LOCALIZACAO_ESC",
+                 "Sexo"="SEXO",
+                 "Situação de conclusão do Ensino Médio "="ST_CONCLUSAO",
+                 "Cor/Raça"="COR_RACA",
+                 "Até que série o pai, ou o homem responsável, estudou"="Q001",
+                 "Até que série a mãe, ou a mulher responsável, estudou"="Q002",
+                 "Renda mensal da família"="Q006",
+                 "Tipo de escola que frequentou o Ensino Médio"="Q027")
+    escolhas = escolhas[-which(escolhas==input$var.biv)]
+    column(width = 3,
+           selectInput(inputId = "segunda.var.resp",
+                       label = "Selecione mais uma variável:",
+                       choices = escolhas))
+  })
+  
+  output$graf.heatmap = renderPlotly({
+    g4 = amostra %>% 
+      dplyr::select(input$nota.biv,input$var.biv,input$segunda.var.resp,ANO) %>% 
+      dplyr::filter(ANO==input$ano.biv&!!sym(input$var.biv)!=""&!!sym(input$segunda.var.resp)!="") %>% 
+      na.omit() %>% 
+      group_by(!!sym(input$var.biv),!!sym(input$segunda.var.resp)) %>% 
+      summarise(nota_media = mean(!!sym(input$nota.biv))) %>% 
+      ggplot(aes(!!sym(input$var.biv), !!sym(input$segunda.var.resp), fill= nota_media)) + 
+      geom_tile() + xlab("") + ylab("") + labs(fill="") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+      scale_fill_viridis(discrete = F)
+    ggplotly(g4)
+  })
+  #=====================================
+  # Gráficos de série temporal
+  #=====================================
+  
+  output$graf_serie_mat = renderPlotly({
+    g5 = amostra %>% 
+      dplyr::select(input$var_time_serie,NOTA_MT,ANO) %>% 
+      dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
+      group_by(!!sym(input$var_time_serie),ANO) %>% 
+      summarise(nota_media = mean(NOTA_MT)) %>% 
+      ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
+      geom_line()+
+      theme_minimal()+xlab("")+ylab("") + labs(col="")
+    ggplotly(g5)
+  
+  })
+  
+  output$graf_serie_cn = renderPlotly({
+    g6 = amostra %>% 
+      dplyr::select(input$var_time_serie,NOTA_CN,ANO) %>% 
+      dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
+      group_by(!!sym(input$var_time_serie),ANO) %>% 
+      summarise(nota_media = mean(NOTA_CN)) %>% 
+      ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
+      geom_line()+
+      theme_minimal()+xlab("")+ylab("") + labs(col="")
+    ggplotly(g6)
+    
+  })
+  
+  output$graf_serie_ch = renderPlotly({
+    g7 = amostra %>% 
+      dplyr::select(input$var_time_serie,NOTA_CH,ANO) %>% 
+      dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
+      group_by(!!sym(input$var_time_serie),ANO) %>% 
+      summarise(nota_media = mean(NOTA_CH)) %>% 
+      ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
+      geom_line()+
+      theme_minimal()+xlab("")+ylab("") + labs(col="")
+    ggplotly(g7)
+    
+  })
+  
+  output$graf_serie_lc = renderPlotly({
+    g8 = amostra %>% 
+      dplyr::select(input$var_time_serie,NOTA_LC,ANO) %>% 
+      dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
+      group_by(!!sym(input$var_time_serie),ANO) %>% 
+      summarise(nota_media = mean(NOTA_LC)) %>% 
+      ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
+      geom_line()+
+      theme_minimal()+xlab("")+ylab("") + labs(col="")
+    ggplotly(g8)
+    
+  })
+  
+  output$graf_serie_red = renderPlotly({
+    g9 = amostra %>% 
+      dplyr::select(input$var_time_serie,NOTA_REDACAO,ANO) %>% 
+      dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
+      group_by(!!sym(input$var_time_serie),ANO) %>% 
+      summarise(nota_media = mean(NOTA_REDACAO)) %>% 
+      ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
+      geom_line()+
+      theme_minimal()+xlab("")+ylab("") + labs(col="")
+    ggplotly(g9)
+    
   })
   
 }
