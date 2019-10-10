@@ -21,7 +21,8 @@ sidebar = dashboardSidebar(
     menuItem("Análise geral",tabName = "analise_geral",icon = icon("fas fa-chart-bar"),
              menuSubItem("Univariada",tabName = "univ"),
              menuSubItem("Bivariada" ,tabName = "bivariada"),
-             menuSubItem("Gráficos de série temporal",tabName = "time_series")),
+             menuSubItem("Gráficos de série temporal",tabName = "time_series"),
+             menuSubItem("Mapas",tabName = "mapa")),
     menuItem("Condições especiais",tabName = "cond_especiais",icon = icon("fas fa-user-tag")),
     menuItem("LinkedIn",icon = icon("fab fa-linkedin"),
              href = "https://www.linkedin.com/in/wellington-ferr-souza/"),
@@ -127,7 +128,7 @@ body = dashboardBody(
                                         choices = 2014:2017)),
                      column(width = 3,
                             selectInput(inputId = "var.biv",
-                                        label = "Selecione uma variável:",
+                                        label = "Selecione a primeira variável:",
                                         choices = c("Dependência administrativa"="DEPENDENCIA_ADM_ESC",
                                                     "Localização"="LOCALIZACAO_ESC",
                                                     "Sexo"="SEXO",
@@ -197,10 +198,36 @@ body = dashboardBody(
             fluidRow(box(title = "Nota média de redação no decorrer dos anos",
                          width = 12,collapsible=TRUE,
                          withSpinner(plotlyOutput("graf_serie_red"))
-            )
-            )
+                         )
                      )
+            ),
+    tabItem(tabName = "mapa",
+            fluidRow(column(width = 3,
+                            selectInput(
+                              inputId = "ano_mapa",
+                              label = "Selecione um ano:",
+                              choices = 2014:2017)
+                            ),
+                     column(width = 3,
+                            selectInput(
+                              inputId = "nota_mapa",
+                              label = "Selecione uma nota:",
+                              choices = c("Ciências da Natureza"="NOTA_CN",
+                                          "Ciências Humanas"="NOTA_CH",
+                                          "Linguagens e Códigos" = "NOTA_LC",
+                                          "Matemática" = "NOTA_MT",
+                                          "Redação" = "NOTA_REDACAO")
+                              )
+                            )
+                     ),
+            fluidRow(box(title = "Nota média por estado",
+                         width = 6,
+                         withSpinner(highchartOutput("mapa_nota_media"))),
+                     box(title = "Participação por estado",
+                         width = 6,
+                         withSpinner(highchartOutput("mapa_participantes"))))
             )
+    )
 )
 
 ui = dashboardPage(
@@ -267,7 +294,7 @@ server = function(input,output,session){
     escolhas = escolhas[-which(escolhas==input$var.biv)]
     column(width = 3,
            selectInput(inputId = "segunda.var.resp",
-                       label = "Selecione mais uma variável:",
+                       label = "Selecione a segunda variável:",
                        choices = escolhas))
   })
   
@@ -352,6 +379,43 @@ server = function(input,output,session){
       theme_minimal()+xlab("")+ylab("") + labs(col="")
     ggplotly(g9)
     
+  })
+  #=====================================
+  # Mapas
+  #=====================================
+  output$mapa_nota_media = renderHighchart({
+    
+    graf.mp = amostra %>% filter(ANO==input$ano_mapa) %>% 
+      select(UF_RESIDENCIA,!!sym(input$nota_mapa)) %>% 
+      group_by(UF_RESIDENCIA) %>% 
+      summarise(media = round(mean(!!sym(input$nota_mapa)),2))
+    
+    hcmap("countries/br/br-all", data = graf.mp, value = "media",
+          joinBy =  c("hc-a2", "UF_RESIDENCIA"), name= "Nota média por estado",
+          dataLabels = list(enabled = TRUE, format = '{point.code}'),
+          tooltip = list(valueDecimals = 2, valuePrefix = "")) %>%
+      hc_title(text = "") %>%
+      hc_tooltip(pointFormat = '<br><span style="color:{series.color}">Nota média</span>: <strong>{point.media}</strong>') %>% 
+      hc_legend(layout = "vertical", align = "right", valueDecimals = 2) %>%
+      hc_credits(enabled = FALSE) 
+  })
+  
+  output$mapa_participantes= renderHighchart({
+    
+    graf.cont = amostra %>% filter(ANO==input$ano_mapa) %>% 
+      group_by(UF_RESIDENCIA) %>% 
+      summarise(contagem = n())
+    total = sum(graf.cont$contagem)
+    graf.cont = graf.cont %>% mutate(prop = round(contagem/total*100,2))
+    
+    hcmap("countries/br/br-all", data = graf.cont, value = "prop",
+          joinBy =  c("hc-a2", "UF_RESIDENCIA"), name= "Participação por estado",
+          dataLabels = list(enabled = TRUE, format = '{point.code}'),
+          tooltip = list(valueDecimals = 2, valuePrefix = "")) %>%
+      hc_title(text = "") %>%
+      hc_tooltip(pointFormat = '<br><span style="color:{series.color}">Porcentagem de participantes da amostra</span>: <strong>{point.prop}%</strong>') %>% 
+      hc_legend(layout = "vertical", align = "right", valueDecimals = 2) %>%
+      hc_credits(enabled = FALSE) 
   })
   
 }
