@@ -259,8 +259,8 @@ server = function(input,output,session){
       dplyr::filter(ANO==input$ano.uni&!!sym(input$var.uni)!="") %>% na.omit() %>%
       ggplot()+
       geom_density(mapping = aes(!!sym(input$nota.uni),
-                                 fill = !!sym(input$var.uni)),alpha = 0.5) +
-      theme_minimal() + labs(fill = "") + xlab("") + ylab("")
+                                        fill=!!sym(input$var.uni)),alpha = 0.5) +
+      theme_minimal() + labs(fill = "") + xlab("") + ylab("") 
     ggplotly(g2)
   })
   
