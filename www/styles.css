@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
+
+/* adicionado para modificar a fonte dos textos utilizados */
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+.main-header .logo {
+    display: block;
+    height: 50px;
+    font-size: 20px;
+    line-height: 50px;
+    text-align: center;
+    font-family: "Josefin Sans",sans-serif;
+    padding: 0 15px;
+    font-weight: 300;
+    overflow: hidden;
+}
+
+body {
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+/* mudando cor das referencias */
+a {
+    color: red
+}
+
+/* fundo branco */
+.content-wrapper {
+  background: #fff;
+}

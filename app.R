@@ -8,6 +8,8 @@ library(hrbrthemes)
 library(viridis)
 library(fpp2)
 library(magrittr)
+library(sysfonts)
+library(showtext)
 
 amostra   = readRDS("amostra_2014_2017.rds")
 nec_espec = readRDS("nec_espec_2014_2017.rds")
@@ -32,15 +34,7 @@ sidebar = dashboardSidebar(
 )
   
 body = dashboardBody(
-  tags$head(tags$style(HTML('
-      .main-header .logo {
-        font-family: "Caviar Dreams", Arial;
-        font-weight: bold
-      }
-    '))),
-  tags$div(tags$style(HTML('.box-header h3 { font-family: "Caviar Dreams", Arial;}'))),
-  tags$div(tags$style(HTML('div { font-family: "Caviar Dreams", Arial;}'))),
-  tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.css"),
+  tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
   tabItems(
     tabItem(tabName = "inicio",
             HTML('<center><img src="enem_logo.png" class="img-responsive" width=80% height=80% ></center>'),
