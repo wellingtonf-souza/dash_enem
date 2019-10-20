@@ -32,12 +32,12 @@ amostra_2014 = amostra_2014 %>%
                      ID_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      ID_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      ID_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          ID_LOCALIZACAO_ESC = 
            case_when(ID_LOCALIZACAO_ESC==1~"Urbana",
                      ID_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -54,7 +54,7 @@ amostra_2014 = amostra_2014 %>%
            case_when(
              TP_ESCOLA == 1 ~"Pública",
              TP_ESCOLA == 2 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -127,10 +127,7 @@ amostra_2014 = amostra_2014 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(ID_DEPENDENCIA_ADM_ESC = ifelse(ID_DEPENDENCIA_ADM_ESC=="NA",NA,ID_DEPENDENCIA_ADM_ESC),
-         ID_LOCALIZACAO_ESC = ifelse(ID_LOCALIZACAO_ESC=="NA",NA,ID_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 amostra_2014 = amostra_2014 %>% 
   mutate(Q001 = 
@@ -188,7 +185,7 @@ amostra_2014 = amostra_2014 %>%
   mutate(Q035 = fct_collapse(Q035,"Somente em escola pública"="A",
                            "Parte em escola pública e parte em escola privada"=c("B","D"),
                            "Somente em escola privada"="C",
-                           "NA"=c("","E","F","G","H")
+                           "Não informado"=c("","E","F","G","H")
                            )
          )
 
@@ -221,12 +218,12 @@ nec_espec_2014 = nec_espec_2014 %>%
                      ID_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      ID_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      ID_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          ID_LOCALIZACAO_ESC = 
            case_when(ID_LOCALIZACAO_ESC==1~"Urbana",
                      ID_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -243,7 +240,7 @@ nec_espec_2014 = nec_espec_2014 %>%
            case_when(
              TP_ESCOLA == 1 ~"Pública",
              TP_ESCOLA == 2 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -316,10 +313,7 @@ nec_espec_2014 = nec_espec_2014 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(ID_DEPENDENCIA_ADM_ESC = ifelse(ID_DEPENDENCIA_ADM_ESC=="NA",NA,ID_DEPENDENCIA_ADM_ESC),
-         ID_LOCALIZACAO_ESC = ifelse(ID_LOCALIZACAO_ESC=="NA",NA,ID_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 nec_espec_2014 = nec_espec_2014 %>% 
   mutate(Q001 = 
@@ -377,7 +371,7 @@ nec_espec_2014 = nec_espec_2014 %>%
   mutate(Q035 = fct_collapse(Q035,"Somente em escola pública"="A",
                       "Parte em escola pública e parte em escola privada"=c("B","D"),
                       "Somente em escola privada"="C",
-                      "NA"=c("","E","F","G","H")
+                      "Não informado"=c("","E","F","G","H")
                       )
          )
 
@@ -406,12 +400,12 @@ amostra_2015 = amostra_2015 %>%
                      TP_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      TP_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      TP_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_LOCALIZACAO_ESC = 
            case_when(TP_LOCALIZACAO_ESC==1~"Urbana",
                      TP_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -428,7 +422,7 @@ amostra_2015 = amostra_2015 %>%
            case_when(
              TP_ESCOLA == 2 ~"Pública",
              TP_ESCOLA == 3 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -502,10 +496,7 @@ amostra_2015 = amostra_2015 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(TP_DEPENDENCIA_ADM_ESC = ifelse(TP_DEPENDENCIA_ADM_ESC=="NA",NA,TP_DEPENDENCIA_ADM_ESC),
-         TP_LOCALIZACAO_ESC = ifelse(TP_LOCALIZACAO_ESC=="NA",NA,TP_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 amostra_2015 = amostra_2015 %>% 
   mutate(Q001 = 
@@ -561,7 +552,7 @@ amostra_2015 = amostra_2015 %>%
   mutate(Q047 = fct_collapse(Q047,"Somente em escola pública"="A",
                       "Parte em escola pública e parte em escola privada"=c("B","C"),
                       "Somente em escola privada"=c("D","E"),
-                      "NA"=c("")
+                      "Não informado"=c("")
                       )
          )
 
@@ -591,12 +582,12 @@ nec_espec_2015 = nec_espec_2015 %>%
                      TP_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      TP_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      TP_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_LOCALIZACAO_ESC = 
            case_when(TP_LOCALIZACAO_ESC==1~"Urbana",
                      TP_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -613,7 +604,7 @@ nec_espec_2015 = nec_espec_2015 %>%
            case_when(
              TP_ESCOLA == 2 ~"Pública",
              TP_ESCOLA == 3 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -687,10 +678,7 @@ nec_espec_2015 = nec_espec_2015 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(TP_DEPENDENCIA_ADM_ESC = ifelse(TP_DEPENDENCIA_ADM_ESC=="NA",NA,TP_DEPENDENCIA_ADM_ESC),
-         TP_LOCALIZACAO_ESC = ifelse(TP_LOCALIZACAO_ESC=="NA",NA,TP_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 nec_espec_2015 = nec_espec_2015 %>% 
   mutate(Q001 = 
@@ -746,7 +734,7 @@ nec_espec_2015 = nec_espec_2015 %>%
   mutate(Q047 = fct_collapse(Q047,"Somente em escola pública"="A",
                              "Parte em escola pública e parte em escola privada"=c("B","C"),
                              "Somente em escola privada"=c("D","E"),
-                             "NA"=c("")
+                             "Não informado"=c("")
   )
   )
 
@@ -775,12 +763,12 @@ amostra_2016 = amostra_2016 %>%
                      TP_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      TP_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      TP_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_LOCALIZACAO_ESC = 
            case_when(TP_LOCALIZACAO_ESC==1~"Urbana",
                      TP_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -797,7 +785,7 @@ amostra_2016 = amostra_2016 %>%
            case_when(
              TP_ESCOLA == 2 ~"Pública",
              TP_ESCOLA == 3 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -871,10 +859,7 @@ amostra_2016 = amostra_2016 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(TP_DEPENDENCIA_ADM_ESC = ifelse(TP_DEPENDENCIA_ADM_ESC=="NA",NA,TP_DEPENDENCIA_ADM_ESC),
-         TP_LOCALIZACAO_ESC = ifelse(TP_LOCALIZACAO_ESC=="NA",NA,TP_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 amostra_2016 = amostra_2016 %>% 
   mutate(Q001 = 
@@ -930,7 +915,7 @@ amostra_2016 = amostra_2016 %>%
   mutate(Q047 = fct_collapse(Q047,"Somente em escola pública"="A",
                              "Parte em escola pública e parte em escola privada"=c("B","C"),
                              "Somente em escola privada"=c("D","E"),
-                             "NA"=c("")
+                             "Não informado"=c("")
   )
   )
 
@@ -960,12 +945,12 @@ nec_espec_2016 = nec_espec_2016 %>%
                      TP_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      TP_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      TP_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_LOCALIZACAO_ESC = 
            case_when(TP_LOCALIZACAO_ESC==1~"Urbana",
                      TP_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -982,7 +967,7 @@ nec_espec_2016 = nec_espec_2016 %>%
            case_when(
              TP_ESCOLA == 2 ~"Pública",
              TP_ESCOLA == 3 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -1056,10 +1041,7 @@ nec_espec_2016 = nec_espec_2016 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(TP_DEPENDENCIA_ADM_ESC = ifelse(TP_DEPENDENCIA_ADM_ESC=="NA",NA,TP_DEPENDENCIA_ADM_ESC),
-         TP_LOCALIZACAO_ESC = ifelse(TP_LOCALIZACAO_ESC=="NA",NA,TP_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 nec_espec_2016 = nec_espec_2016 %>% 
   mutate(Q001 = 
@@ -1115,7 +1097,7 @@ nec_espec_2016 = nec_espec_2016 %>%
   mutate(Q047 = fct_collapse(Q047,"Somente em escola pública"="A",
                              "Parte em escola pública e parte em escola privada"=c("B","C"),
                              "Somente em escola privada"=c("D","E"),
-                             "NA"=c("")
+                             "Não informado"=c("")
   )
   )
 
@@ -1144,12 +1126,12 @@ amostra_2017 = amostra_2017 %>%
                      TP_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      TP_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      TP_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_LOCALIZACAO_ESC = 
            case_when(TP_LOCALIZACAO_ESC==1~"Urbana",
                      TP_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -1166,7 +1148,7 @@ amostra_2017 = amostra_2017 %>%
            case_when(
              TP_ESCOLA == 2 ~"Pública",
              TP_ESCOLA == 3 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -1240,10 +1222,7 @@ amostra_2017 = amostra_2017 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(TP_DEPENDENCIA_ADM_ESC = ifelse(TP_DEPENDENCIA_ADM_ESC=="NA",NA,TP_DEPENDENCIA_ADM_ESC),
-         TP_LOCALIZACAO_ESC = ifelse(TP_LOCALIZACAO_ESC=="NA",NA,TP_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 amostra_2017 = amostra_2017 %>% 
   mutate(Q001 = 
@@ -1299,7 +1278,7 @@ amostra_2017 = amostra_2017 %>%
   mutate(Q027 = fct_collapse(Q027,"Somente em escola pública"="A\n",
                              "Parte em escola pública e parte em escola privada"=c("B\n","C\n"),
                              "Somente em escola privada"=c("D\n","E\n"),
-                             "NA"=c("")
+                             "Não informado"=c("")
   )
   )
 
@@ -1328,12 +1307,12 @@ nec_espec_2017 = nec_espec_2017 %>%
                      TP_DEPENDENCIA_ADM_ESC==2~"Estadual",
                      TP_DEPENDENCIA_ADM_ESC==3~"Municipal",
                      TP_DEPENDENCIA_ADM_ESC==4~"Privada",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_LOCALIZACAO_ESC = 
            case_when(TP_LOCALIZACAO_ESC==1~"Urbana",
                      TP_LOCALIZACAO_ESC==2~"Rural",
-                     TRUE~"NA"),
+                     TRUE~"Não informado"),
          
          TP_SEXO = 
            case_when(TP_SEXO=="F"~"Feminino",
@@ -1350,7 +1329,7 @@ nec_espec_2017 = nec_espec_2017 %>%
            case_when(
              TP_ESCOLA == 2 ~"Pública",
              TP_ESCOLA == 3 ~"Privada",
-             TRUE~"NA"
+             TRUE~"Não informado"
            ),
          
          TP_COR_RACA = 
@@ -1424,10 +1403,7 @@ nec_espec_2017 = nec_espec_2017 %>%
              IN_AUTISMO==1~"Sim",
              TRUE~"Não"
            )
-  ) %>% 
-  mutate(TP_DEPENDENCIA_ADM_ESC = ifelse(TP_DEPENDENCIA_ADM_ESC=="NA",NA,TP_DEPENDENCIA_ADM_ESC),
-         TP_LOCALIZACAO_ESC = ifelse(TP_LOCALIZACAO_ESC=="NA",NA,TP_LOCALIZACAO_ESC),
-         TP_ESCOLA = ifelse(TP_ESCOLA=="NA",NA,TP_ESCOLA))
+  )
 
 nec_espec_2017 = nec_espec_2017 %>% 
   mutate(Q001 = 
@@ -1483,7 +1459,7 @@ nec_espec_2017 = nec_espec_2017 %>%
   mutate(Q027 = fct_collapse(Q027,"Somente em escola pública"="A\n",
                              "Parte em escola pública e parte em escola privada"=c("B\n","C\n"),
                              "Somente em escola privada"=c("D\n","E\n"),
-                             "NA"=c("")
+                             "Não informado"=c("")
   )
   )
 
@@ -1564,9 +1540,6 @@ nec_espec_2014_2017 = data.frame(
   Q027 = fct_c(nec_espec_2017$Q027,nec_espec_2016$Q047,
                nec_espec_2015$Q047,nec_espec_2014$Q035)
 )
-
-amostra_2014_2017$Q027 = ifelse(as.character(amostra_2014_2017$Q027)=="NA",NA,as.character(amostra_2014_2017$Q027))
-nec_espec_2014_2017$Q027 = ifelse(as.character(nec_espec_2014_2017$Q027)=="NA",NA,as.character(nec_espec_2014_2017$Q027))
 
 saveRDS(nec_espec_2014_2017,file = "nec_espec_2014_2017.rds")
 saveRDS(amostra_2014_2017,file = "amostra_2014_2017.rds")
