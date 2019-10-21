@@ -1,17 +1,8 @@
-library(shiny)
-library(shinydashboard)
-library(tidyverse)
-library(plotly)
-library(highcharter)
-library(shinycssloaders)
-library(hrbrthemes)
-library(magrittr)
-library(viridis)
-library(GGally)
 
+source("global.R")
 
-amostra   = readRDS("amostra_2014_2017.rds")
-nec_espec = readRDS("nec_espec_2014_2017.rds")
+amostra   = readRDS("amostra_2014_2018.rds")
+nec_espec = readRDS("nec_espec_2014_2018.rds")
 
 header = dashboardHeader(title = "ENEM Analytics")
 
@@ -81,7 +72,7 @@ body = dashboardBody(
                      column(width = 2,
                             selectInput(inputId = "ano.uni",
                                         label = "Selecione um ano:",
-                                        choices = 2014:2017)),
+                                        choices = 2014:2018)),
                      column(width = 5,
                             selectInput(inputId = "var.uni",
                                         label = "Selecione uma variável:",
@@ -117,7 +108,7 @@ body = dashboardBody(
                      column(width = 2,
                             selectInput(inputId = "ano.biv",
                                         label = "Selecione um ano:",
-                                        choices = 2014:2017)),
+                                        choices = 2014:2018)),
                      column(width = 3,
                             selectInput(inputId = "var.biv",
                                         label = "Selecione a primeira variável:",
@@ -197,7 +188,7 @@ body = dashboardBody(
                             selectInput(
                               inputId = "ano_mapa",
                               label = "Selecione um ano:",
-                              choices = 2014:2017)
+                              choices = 2014:2018)
                             ),
                      column(width = 3,
                             selectInput(
@@ -223,7 +214,7 @@ body = dashboardBody(
                             selectInput(
                               inputId = "ano_cond_especiais",
                               label = "Selecione um ano:",
-                              choices = 2014:2017)
+                              choices = 2014:2018)
             ),
             column(width = 3,
                    selectInput(
@@ -376,7 +367,7 @@ server = function(input,output,session){
       group_by(!!sym(input$var_time_serie),ANO) %>% 
       summarise(nota_media = mean(NOTA_MT)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
-      stat_smooth(method = "lm", formula = y ~ poly(x, 3), se = F)+
+      stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
       geom_point()+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
     ggplotly(g5)
@@ -390,7 +381,7 @@ server = function(input,output,session){
       group_by(!!sym(input$var_time_serie),ANO) %>% 
       summarise(nota_media = mean(NOTA_CN)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
-      stat_smooth(method = "lm", formula = y ~ poly(x, 3), se = F)+
+      stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
       geom_point()+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
     ggplotly(g6)
@@ -404,7 +395,7 @@ server = function(input,output,session){
       group_by(!!sym(input$var_time_serie),ANO) %>% 
       summarise(nota_media = mean(NOTA_CH)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
-      stat_smooth(method = "lm", formula = y ~ poly(x, 3), se = F)+
+      stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
       geom_point()+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
     ggplotly(g7)
@@ -418,7 +409,7 @@ server = function(input,output,session){
       group_by(!!sym(input$var_time_serie),ANO) %>% 
       summarise(nota_media = mean(NOTA_LC)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
-      stat_smooth(method = "lm", formula = y ~ poly(x, 3), se = F)+
+      stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
       geom_point()+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
     ggplotly(g8)
@@ -432,7 +423,7 @@ server = function(input,output,session){
       group_by(!!sym(input$var_time_serie),ANO) %>% 
       summarise(nota_media = mean(NOTA_REDACAO)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
-      stat_smooth(method = "lm", formula = y ~ poly(x, 3), se = F)+
+      stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
       geom_point()+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
     ggplotly(g9)
@@ -723,7 +714,7 @@ server = function(input,output,session){
   output$particip_nec_esp = renderPlotly({
     g18 = nec_espec %>% filter(!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(ANO) %>% summarise(Participantes = n()) %>%
-      ggplot(mapping = aes(x= ANO,y = Participantes)) + geom_bar(stat = "identity",fill="#1f9e89")+
+      ggplot(mapping = aes(x= ANO,y = Participantes)) + geom_line(fill="#440154")+
       theme_minimal() + xlab("Ano")
     ggplotly(g18,tooltip = c("y"))
   })
