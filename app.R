@@ -4,8 +4,17 @@ source("global.R")
 amostra   = readRDS("amostra_2014_2018.rds")
 nec_espec = readRDS("nec_espec_2014_2018.rds")
 
-header = dashboardHeader(title = "ENEM Analytics")
-
+header = shinydashboardPlus::dashboardHeaderPlus(
+  title = tagList(
+    span(class = "logo-lg", "ENEM Analytics"), 
+    img(
+      class="logo-mini", 
+      style="width: 42px; margin-left: -10px; margin-top: 10px;", 
+      src = "logo_enem_mini.png"
+    )
+  ),
+  enable_rightsidebar = F
+)
 sidebar = dashboardSidebar(
   sidebarMenu(
     menuItem("Início",tabName = "inicio",icon = icon("home")),
@@ -13,7 +22,7 @@ sidebar = dashboardSidebar(
     menuItem("Análise geral",tabName = "analise_geral",icon = icon("fas fa-chart-bar"),
              menuSubItem("Univariada",tabName = "univ"),
              menuSubItem("Bivariada" ,tabName = "bivariada"),
-             menuSubItem("Gráficos de série temporal",tabName = "time_series"),
+             menuSubItem("Série temporal",tabName = "time_series"),
              menuSubItem("Mapas",tabName = "mapa")),
     menuItem("Condições especiais",tabName = "cond_especiais",icon = icon("fas fa-user-tag")),
     menuItem("LinkedIn",icon = icon("fab fa-linkedin"),
@@ -24,6 +33,7 @@ sidebar = dashboardSidebar(
 )
   
 body = dashboardBody(
+  theme_blue_gradient,
   tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
   tabItems(
     tabItem(tabName = "inicio",
@@ -88,13 +98,13 @@ body = dashboardBody(
             ),
             fluidRow(box(width = 12,collapsible=TRUE,
                          title = "Boxplots das notas em relação às categorias da variável",
-                         withSpinner(plotlyOutput("graf.boxplot.uni")))),
+                         withSpinner(plotlyOutput("graf.boxplot.uni"),type = 6))),
             fluidRow(box(width = 12,collapsible=TRUE,
                          title = "Densidade das notas em relação às categorias da variável",
-                         withSpinner(plotlyOutput("graf.density.uni")))),
+                         withSpinner(plotlyOutput("graf.density.uni"),type = 6))),
             fluidRow(box(width = 12,collapsible=TRUE,
                          title = "Quantitativo de indivíduos em relação às categorias da variável",
-                         withSpinner(plotlyOutput("graf.quanti.uni"))))
+                         withSpinner(plotlyOutput("graf.quanti.uni"),type = 6)))
     ),
     tabItem(tabName = "bivariada",
             fluidRow(column(width = 2,
@@ -131,8 +141,8 @@ body = dashboardBody(
                    <div class="box-body">
                    <script src="assets/spinner.js"></script>
                    <div class="shiny-spinner-output-container">
-                   <div class="load-container load1">
-                   <div id="spinner-0434c3bd3dfcd8a1fdb8955de224d747" class="loader">Loading...</div>
+                   <div class="load-container load6">
+                   <div id="spinner-c4eca575d30b83ef63ed337181f21b8b" class="loader">Loading...</div>
                    </div>
                    <div id="graf.heatmap" style="width:100%; height:650px; " class="plotly html-widget html-widget-output shiny-report-size"></div>
                    </div>
@@ -159,27 +169,27 @@ body = dashboardBody(
                             ),
             fluidRow(box(title = "Nota média de matemática no decorrer dos anos",
                          width = 12,collapsible=TRUE,
-                         withSpinner(plotlyOutput("graf_serie_mat"))
+                         withSpinner(plotlyOutput("graf_serie_mat"),type = 6)
                          )
                      ),
             fluidRow(box(title = "Nota média de ciências da natureza no decorrer dos anos",
                          width = 12,collapsible=TRUE,
-                         withSpinner(plotlyOutput("graf_serie_cn"))
+                         withSpinner(plotlyOutput("graf_serie_cn"),type = 6)
                          )
                      ),
             fluidRow(box(title = "Nota média de ciências humanas no decorrer dos anos",
                          width = 12,collapsible=TRUE,
-                         withSpinner(plotlyOutput("graf_serie_ch"))
+                         withSpinner(plotlyOutput("graf_serie_ch"),type = 6)
                          )
                      ),
             fluidRow(box(title = "Nota média de linguagens e códigos no decorrer dos anos",
                          width = 12,collapsible=TRUE,
-                         withSpinner(plotlyOutput("graf_serie_lc"))
+                         withSpinner(plotlyOutput("graf_serie_lc"),type = 6)
                          )
                      ),
             fluidRow(box(title = "Nota média de redação no decorrer dos anos",
                          width = 12,collapsible=TRUE,
-                         withSpinner(plotlyOutput("graf_serie_red"))
+                         withSpinner(plotlyOutput("graf_serie_red"),type = 6)
                          )
                      )
             ),
@@ -204,10 +214,10 @@ body = dashboardBody(
                      ),
             fluidRow(box(title = "Nota média por estado",
                          width = 6,collapsible=TRUE,
-                         withSpinner(highchartOutput("mapa_nota_media"))),
+                         withSpinner(highchartOutput("mapa_nota_media"),type = 6)),
                      box(title = "Participação por estado",
                          width = 6,collapsible=TRUE,
-                         withSpinner(highchartOutput("mapa_participantes"))))
+                         withSpinner(highchartOutput("mapa_participantes"),type = 6)))
             ),
     tabItem(tabName = "cond_especiais",
             fluidRow(column(width = 3,
@@ -240,42 +250,42 @@ body = dashboardBody(
             ),
             fluidRow(box(width = 6,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Dependência administrativa"),
-                         collapsible = T,withSpinner(plotlyOutput("depend_adm_esc_nec_espe_plot"))),
+                         collapsible = T,withSpinner(plotlyOutput("depend_adm_esc_nec_espe_plot"),type = 6)),
                      box(width = 6,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Localização"),
-                         collapsible = T,withSpinner(plotlyOutput("localizacao_esc_nec_espe_plot")))
+                         collapsible = T,withSpinner(plotlyOutput("localizacao_esc_nec_espe_plot"),type = 6))
                      ),
             fluidRow(box(width = 6,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Sexo"),
-                         collapsible = T,withSpinner(plotlyOutput("sexo_nec_espe_plot"))),
+                         collapsible = T,withSpinner(plotlyOutput("sexo_nec_espe_plot"),type = 6)),
                      box(width = 6,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Cor/Raça"),
-                         collapsible = T,withSpinner(plotlyOutput("cor_nec_espe_plot")))
+                         collapsible = T,withSpinner(plotlyOutput("cor_nec_espe_plot"),type = 6))
                      ),
             fluidRow(box(width = 6,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Instrução do pai"),
-                         collapsible = T,withSpinner(plotlyOutput("q001_nec_espe_plot"))),
+                         collapsible = T,withSpinner(plotlyOutput("q001_nec_espe_plot"),type = 6)),
                      box(width = 6,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Instrução da mãe"),
-                         collapsible = T,withSpinner(plotlyOutput("q002_nec_espe_plot")))
+                         collapsible = T,withSpinner(plotlyOutput("q002_nec_espe_plot"),type = 6))
                      ),
             fluidRow(box(width = 12,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Renda"),
-                         collapsible = T,withSpinner(plotlyOutput("renda_nec_espe_plot")))
+                         collapsible = T,withSpinner(plotlyOutput("renda_nec_espe_plot"),type = 6))
                      ),
             fluidRow(box(width = 12,
                          title = HTML("Grupo com a condição especial <em> vs </em> geral - Escola do ensino médio"),
-                         collapsible = T,withSpinner(plotlyOutput("escola_nec_espe_plot")))
+                         collapsible = T,withSpinner(plotlyOutput("escola_nec_espe_plot"),type = 6))
                      ),
             fluidRow(box(width = 12,
                          title = HTML("Participantes com a condição especial no decorrer dos anos"),
-                         collapsible = T,withSpinner(plotlyOutput("particip_nec_esp")))
+                         collapsible = T,withSpinner(plotlyOutput("particip_nec_esp"),type = 6))
             )
             )
     )
 )
-
-ui = dashboardPage(
+# dashboardPage
+ui = dashboardPagePlus(
   header,
   sidebar,
   body
