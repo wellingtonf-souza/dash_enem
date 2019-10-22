@@ -149,7 +149,10 @@ body = dashboardBody(
                    </div>
                    </div>
                    </div>')
-                     )
+              # box(title = "Heatmap das notas médias dos grupos",
+              #     width = 12,collapsible=TRUE,
+              #     withSpinner(plotlyOutput("graf.heatmap"),type = 6)
+              )
             ),
     tabItem(tabName = "time_series",
             fluidRow(column(width = 3,
@@ -281,10 +284,10 @@ body = dashboardBody(
                          title = HTML("Participantes com a condição especial no decorrer dos anos"),
                          collapsible = T,withSpinner(plotlyOutput("particip_nec_esp"),type = 6))
             )
-            )
+    )
     )
 )
-# dashboardPage
+
 ui = dashboardPagePlus(
   header,
   sidebar,
@@ -434,6 +437,7 @@ server = function(input,output,session){
       summarise(nota_media = mean(NOTA_REDACAO)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
       stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
+      #geom_line(size = 2)+
       geom_point()+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
     ggplotly(g9)
