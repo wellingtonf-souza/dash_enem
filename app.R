@@ -133,25 +133,9 @@ body = dashboardBody(
                      uiOutput("segunda.var")
             ),
             fluidRow(
-              HTML('<div class="col-sm-12">
-                   <div class="box">
-                   <div class="box-header">
-                   <h3 class="box-title">Heatmap das notas médias dos grupos</h3>
-                   </div>
-                   <div class="box-body">
-                   <script src="assets/spinner.js"></script>
-                   <div class="shiny-spinner-output-container">
-                   <div class="load-container load6">
-                   <div id="spinner-c4eca575d30b83ef63ed337181f21b8b" class="loader">Loading...</div>
-                   </div>
-                   <div id="graf.heatmap" style="width:100%; height:650px; " class="plotly html-widget html-widget-output shiny-report-size"></div>
-                   </div>
-                   </div>
-                   </div>
-                   </div>')
-              # box(title = "Heatmap das notas médias dos grupos",
-              #     width = 12,collapsible=TRUE,
-              #     withSpinner(plotlyOutput("graf.heatmap"),type = 6)
+              box(title = "Heatmap das notas médias dos grupos",
+                  width = 12,collapsible=TRUE,
+                  withSpinner(plotlyOutput("graf.heatmap",height = "650px"),type = 6))
               )
             ),
     tabItem(tabName = "time_series",
@@ -289,9 +273,11 @@ body = dashboardBody(
 )
 
 ui = dashboardPagePlus(
-  header,
-  sidebar,
-  body
+  
+  header = header,
+  sidebar = sidebar,
+  body = body
+  
 )
 server = function(input,output,session){
   
