@@ -284,10 +284,16 @@ server = function(input,output,session){
   #=====================================
   # analise geral - Univariada
   #=====================================
-  output$graf.boxplot.uni = renderPlotly({
-    g1 = amostra %>% 
+  
+  dados.graficos.geral = reactive({
+    dados = amostra %>% 
       dplyr::select(input$nota.uni,input$var.uni,ANO) %>% 
-      dplyr::filter(ANO==input$ano.uni&!!sym(input$var.uni)!="") %>% na.omit() %>% 
+      dplyr::filter(ANO==input$ano.uni&!!sym(input$var.uni)!="") %>% na.omit()
+    list(dados = dados)
+  })
+  
+  output$graf.boxplot.uni = renderPlotly({
+    g1 = dados.graficos.geral()[["dados"]] %>% 
       ggplot()+
       geom_boxplot(mapping = aes(!!sym(input$var.uni),
                                  !!sym(input$nota.uni),
@@ -298,9 +304,7 @@ server = function(input,output,session){
   })
   
   output$graf.density.uni = renderPlotly({
-    g2 = amostra %>% 
-      dplyr::select(input$nota.uni,input$var.uni,ANO) %>% 
-      dplyr::filter(ANO==input$ano.uni&!!sym(input$var.uni)!="") %>% na.omit() %>%
+    g2 = dados.graficos.geral()[["dados"]] %>%
       ggplot()+
       geom_density(mapping = aes(!!sym(input$nota.uni),
                                         fill=!!sym(input$var.uni)),alpha = 0.5) +
@@ -309,9 +313,7 @@ server = function(input,output,session){
   })
   
   output$graf.quanti.uni = renderPlotly({
-    g3 = amostra %>% 
-      dplyr::select(input$nota.uni,input$var.uni,ANO) %>% 
-      dplyr::filter(ANO==input$ano.uni&!!sym(input$var.uni)!="") %>% na.omit() %>% 
+    g3 = dados.graficos.geral()[["dados"]] %>% 
       ggplot(mapping = aes(!!sym(input$var.uni)))+
       geom_bar(aes(fill=!!sym(input$var.uni)),col = "black") + 
       theme_minimal() + labs(fill = "") +
