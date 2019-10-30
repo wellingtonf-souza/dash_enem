@@ -74,8 +74,8 @@ body = dashboardBody(
             fluidRow(column(width = 2,
                             selectInput(inputId = "nota.uni",
                                         label = "Selecione uma nota:",
-                                        choices = c("Ciências da Natureza"="NOTA_CN",
-                                                    "Ciências Humanas"="NOTA_CH",
+                                        choices = c("Ciências Humanas"="NOTA_CH",
+                                                    "Ciências da Natureza"="NOTA_CN",
                                                     "Linguagens e Códigos" = "NOTA_LC",
                                                     "Matemática" = "NOTA_MT",
                                                     "Redação" = "NOTA_REDACAO"))),
@@ -86,14 +86,14 @@ body = dashboardBody(
                      column(width = 5,
                             selectInput(inputId = "var.uni",
                                         label = "Selecione uma variável:",
-                                        choices = c("Dependência administrativa"="DEPENDENCIA_ADM_ESC",
+                                        choices = c("Renda mensal da família"="Q006",
+                                                    "Dependência administrativa"="DEPENDENCIA_ADM_ESC",
                                                     "Localização"="LOCALIZACAO_ESC",
                                                     "Sexo"="SEXO",
                                                     "Situação de conclusão do Ensino Médio "="ST_CONCLUSAO",
                                                     "Cor/Raça"="COR_RACA",
                                                     "Até que série o pai, ou o homem responsável, estudou"="Q001",
                                                     "Até que série a mãe, ou a mulher responsável, estudou"="Q002",
-                                                    "Renda mensal da família"="Q006",
                                                     "Tipo de escola que frequentou o Ensino Médio"="Q027")))
             ),
             fluidRow(box(width = 12,collapsible=TRUE,
@@ -110,8 +110,8 @@ body = dashboardBody(
             fluidRow(column(width = 2,
                             selectInput(inputId = "nota.biv",
                                         label = "Selecione uma nota:",
-                                        choices = c("Ciências da Natureza"="NOTA_CN",
-                                                    "Ciências Humanas"="NOTA_CH",
+                                        choices = c("Ciências Humanas"="NOTA_CH",
+                                                    "Ciências da Natureza"="NOTA_CN",
                                                     "Linguagens e Códigos" = "NOTA_LC",
                                                     "Matemática" = "NOTA_MT",
                                                     "Redação" = "NOTA_REDACAO"))),
@@ -307,19 +307,30 @@ server = function(input,output,session){
     g2 = dados.graficos.geral()[["dados"]] %>%
       ggplot()+
       geom_density(mapping = aes(!!sym(input$nota.uni),
-                                        fill=!!sym(input$var.uni)),alpha = 0.5) +
+                                 fill=!!sym(input$var.uni),
+                                 text = paste("",!!sym(input$var.uni))),alpha = 0.5) +
       theme_minimal() + labs(fill = "") + xlab("") + ylab("") 
-    ggplotly(g2,tooltip = c("fill"))
+    ggplotly(g2,tooltip = "text")
   })
   
   output$graf.quanti.uni = renderPlotly({
     g3 = dados.graficos.geral()[["dados"]] %>% 
-      ggplot(mapping = aes(!!sym(input$var.uni)))+
-      geom_bar(aes(fill=!!sym(input$var.uni)),col = "black") + 
+      group_by(!!sym(input$var.uni)) %>% 
+      summarise(cont = n()) %>% 
+      ggplot()+
+      geom_bar(stat = "identity",
+               aes(x = !!sym(input$var.uni),
+                   y = cont,
+                   fill=!!sym(input$var.uni),
+                   text = sprintf("Categoria: %s<br>Contagem: %s", 
+                                  !!sym(input$var.uni), cont)),
+               col = "black") + 
       theme_minimal() + labs(fill = "") +
       theme(legend.position='none') +
       coord_flip() + xlab("") + ylab("")
-    ggplotly(g3,tooltip = c("x","y"))
+    
+    ggplotly(g3,tooltip = "text")
+    
   })
   #=====================================
   # analise geral - bivariada
@@ -348,13 +359,19 @@ server = function(input,output,session){
       dplyr::filter(ANO==input$ano.biv&!!sym(input$var.biv)!=""&!!sym(input$segunda.var.resp)!="") %>% 
       na.omit() %>% 
       group_by(!!sym(input$var.biv),!!sym(input$segunda.var.resp)) %>% 
-      summarise(nota_media = mean(!!sym(input$nota.biv))) %>% 
-      ggplot(aes(!!sym(input$var.biv), !!sym(input$segunda.var.resp), fill= nota_media)) + 
+      summarise(nota_media = round(mean(!!sym(input$nota.biv)),2)) %>% 
+      ggplot(aes(!!sym(input$var.biv),
+                 !!sym(input$segunda.var.resp), 
+                 fill= nota_media,
+                 text =  sprintf("%s<br>%s<br>Nota média: %s", 
+                             !!sym(input$var.biv), 
+                             !!sym(input$segunda.var.resp),
+                             nota_media))) + 
       geom_tile() + xlab("") + ylab("") + labs(fill="") +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       scale_fill_viridis(discrete = F)
-    ggplotly(g4)
+    ggplotly(g4,tooltip = "text")
   })
   
   #=====================================
@@ -366,12 +383,15 @@ server = function(input,output,session){
       dplyr::select(input$var_time_serie,NOTA_MT,ANO) %>% 
       dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
       group_by(!!sym(input$var_time_serie),ANO) %>% 
-      summarise(nota_media = mean(NOTA_MT)) %>% 
-      ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
+      summarise(nota_media = round(mean(NOTA_MT),2)) %>% 
+      ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie),
+                           ))+
       stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
-      geom_point()+
+      geom_point(aes(text = sprintf("%s<br>Nota média: %s",
+                                    !!sym(input$var_time_serie),
+                                    nota_media)))+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
-    ggplotly(g5)
+    ggplotly(g5,tooltip = "text")
   
   })
   
@@ -380,12 +400,14 @@ server = function(input,output,session){
       dplyr::select(input$var_time_serie,NOTA_CN,ANO) %>% 
       dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
       group_by(!!sym(input$var_time_serie),ANO) %>% 
-      summarise(nota_media = mean(NOTA_CN)) %>% 
+      summarise(nota_media = round(mean(NOTA_CN),2)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
       stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
-      geom_point()+
+      geom_point(aes(text = sprintf("%s<br>Nota média: %s",
+                                    !!sym(input$var_time_serie),
+                                    nota_media)))+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
-    ggplotly(g6)
+    ggplotly(g6,tooltip = "text")
     
   })
   
@@ -394,12 +416,14 @@ server = function(input,output,session){
       dplyr::select(input$var_time_serie,NOTA_CH,ANO) %>% 
       dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
       group_by(!!sym(input$var_time_serie),ANO) %>% 
-      summarise(nota_media = mean(NOTA_CH)) %>% 
+      summarise(nota_media = round(mean(NOTA_CH),2)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
       stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
-      geom_point()+
+      geom_point(aes(text = sprintf("%s<br>Nota média: %s",
+                                    !!sym(input$var_time_serie),
+                                    nota_media)))+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
-    ggplotly(g7)
+    ggplotly(g7,tooltip = "text")
     
   })
   
@@ -408,12 +432,14 @@ server = function(input,output,session){
       dplyr::select(input$var_time_serie,NOTA_LC,ANO) %>% 
       dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
       group_by(!!sym(input$var_time_serie),ANO) %>% 
-      summarise(nota_media = mean(NOTA_LC)) %>% 
+      summarise(nota_media = round(mean(NOTA_LC),2)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
       stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
-      geom_point()+
+      geom_point(aes(text = sprintf("%s<br>Nota média: %s",
+                                    !!sym(input$var_time_serie),
+                                    nota_media)))+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
-    ggplotly(g8)
+    ggplotly(g8,tooltip = "text")
     
   })
   
@@ -422,13 +448,15 @@ server = function(input,output,session){
       dplyr::select(input$var_time_serie,NOTA_REDACAO,ANO) %>% 
       dplyr::filter(!!sym(input$var_time_serie)!="") %>% na.omit() %>% 
       group_by(!!sym(input$var_time_serie),ANO) %>% 
-      summarise(nota_media = mean(NOTA_REDACAO)) %>% 
+      summarise(nota_media = round(mean(NOTA_REDACAO),2)) %>% 
       ggplot(mapping = aes(ANO,nota_media,col = !!sym(input$var_time_serie)))+
       stat_smooth(method = "lm", formula = y ~ poly(x, 4), se = F)+
       #geom_line(size = 2)+
-      geom_point()+
+      geom_point(aes(text = sprintf("%s<br>Nota média: %s",
+                                    !!sym(input$var_time_serie),
+                                    nota_media)))+
       theme_minimal()+xlab("")+ylab("") + labs(col="")
-    ggplotly(g9)
+    ggplotly(g9,tooltip = "text")
     
   })
   #=====================================
@@ -478,20 +506,24 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(DEPENDENCIA_ADM_ESC) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(DEPENDENCIA_ADM_ESC) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(DEPENDENCIA_ADM_ESC!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = DEPENDENCIA_ADM_ESC,values_from = Média,names_from = Grupo)
+    
     g10 = ggplot() +
-      geom_point(dados,mapping = aes(DEPENDENCIA_ADM_ESC,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(DEPENDENCIA_ADM_ESC,
+                                     Média, 
+                                     col = Grupo,
+                                     text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = DEPENDENCIA_ADM_ESC,xend = DEPENDENCIA_ADM_ESC,
                          y = Geral, yend = `Condição Especial`))+
@@ -499,7 +531,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g10,tooltip = c("y"))
+    ggplotly(g10,tooltip = "text")
     
   })
   
@@ -508,20 +540,20 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(LOCALIZACAO_ESC) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(LOCALIZACAO_ESC) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(LOCALIZACAO_ESC!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = LOCALIZACAO_ESC,values_from = Média,names_from = Grupo)
     g11 = ggplot() +
-      geom_point(dados,mapping = aes(LOCALIZACAO_ESC,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(LOCALIZACAO_ESC,Média, col = Grupo,text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = LOCALIZACAO_ESC,xend = LOCALIZACAO_ESC,
                          y = Geral, yend = `Condição Especial`))+
@@ -529,7 +561,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g11,tooltip = c("y"))
+    ggplotly(g11,tooltip = "text")
     
   })
   
@@ -538,20 +570,20 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(SEXO) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(SEXO) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(SEXO!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = SEXO,values_from = Média,names_from = Grupo)
     g12 = ggplot() +
-      geom_point(dados,mapping = aes(SEXO,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(SEXO,Média, col = Grupo,text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = SEXO,xend = SEXO,
                          y = Geral, yend = `Condição Especial`))+
@@ -559,7 +591,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g12,tooltip = c("y"))
+    ggplotly(g12,tooltip = "text")
     
   })
   
@@ -568,20 +600,20 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(COR_RACA) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(COR_RACA) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(COR_RACA!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = COR_RACA,values_from = Média,names_from = Grupo)
     g13 = ggplot() +
-      geom_point(dados,mapping = aes(COR_RACA,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(COR_RACA,Média, col = Grupo,text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = COR_RACA,xend = COR_RACA,
                          y = Geral, yend = `Condição Especial`))+
@@ -589,7 +621,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g13,tooltip = c("y"))
+    ggplotly(g13,tooltip = "text")
     
   })
   
@@ -598,20 +630,20 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(Q001) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(Q001) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(Q001!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = Q001,values_from = Média,names_from = Grupo)
     g14 = ggplot() +
-      geom_point(dados,mapping = aes(Q001,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(Q001,Média, col = Grupo,text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = Q001,xend = Q001,
                          y = Geral, yend = `Condição Especial`))+
@@ -619,7 +651,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g14,tooltip = c("y"))
+    ggplotly(g14,tooltip ="text")
     
   })
   
@@ -628,20 +660,20 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(Q002) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(Q002) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(Q002!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = Q002,values_from = Média,names_from = Grupo)
     g15 = ggplot() +
-      geom_point(dados,mapping = aes(Q002,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(Q002,Média, col = Grupo,text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = Q002,xend = Q002,
                          y = Geral, yend = `Condição Especial`))+
@@ -649,7 +681,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g15,tooltip = c("y"))
+    ggplotly(g15,tooltip = "text")
     
   })
   
@@ -658,20 +690,20 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(Q006) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(Q006) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(Q006!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = Q006,values_from = Média,names_from = Grupo)
     g16 = ggplot() +
-      geom_point(dados,mapping = aes(Q006,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(Q006,Média, col = Grupo,text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = Q006,xend = Q006,
                          y = Geral, yend = `Condição Especial`))+
@@ -679,7 +711,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g16,tooltip = c("y"))
+    ggplotly(g16,tooltip = "text")
     
   })
   
@@ -688,20 +720,20 @@ server = function(input,output,session){
     summarise_geral = amostra %>% 
       filter(ANO==input$ano_cond_especiais) %>% 
       group_by(Q027) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Geral"))
     
     summarise_nec = nec_espec %>% 
       filter(ANO==input$ano_cond_especiais&!!sym(input$cond_espec_selected)=="Sim") %>% 
       group_by(Q027) %>% 
-      summarise(Média = mean(!!sym(input$nota_cond_especiais))) %>% 
+      summarise(Média = round(mean(!!sym(input$nota_cond_especiais)),2)) %>% 
       mutate(Grupo = rep("Condição Especial"))
     
     dados = bind_rows(summarise_geral,summarise_nec) %>% filter(Q027!="")
     dados_wider = dados %>% 
       pivot_wider(id_cols = Q027,values_from = Média,names_from = Grupo)
     g17 = ggplot() +
-      geom_point(dados,mapping = aes(Q027,Média, col = Grupo),size = 2) +
+      geom_point(dados,mapping = aes(Q027,Média, col = Grupo,text = sprintf("Média: %s",Média)),size = 2) +
       geom_segment(dados_wider,mapping = 
                      aes(x = Q027,xend = Q027,
                          y = Geral, yend = `Condição Especial`))+
@@ -709,7 +741,7 @@ server = function(input,output,session){
       xlab("") + ylab("Nota média") + labs(col="") +
       scale_color_viridis(discrete=TRUE) +
       coord_flip()
-    ggplotly(g17,tooltip = c("y"))
+    ggplotly(g17,tooltip = "text")
     
   })
   
